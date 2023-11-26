@@ -45,7 +45,6 @@
 # print(recommendation)
 
 
-
 # self.laptops = [
 #     {'name': f'Laptop{i}', 'usage': random.choice(['Graphic Design', 'Office Work', 'Gaming', 'Software Development']),
 #      'budget': random.choice(['High', 'Medium', 'Low']),
@@ -57,6 +56,8 @@
 #      'brand': random.choice(['Dell', 'HP', 'Lenovo', 'Asus', 'Acer'])} for i in range(1, 51)
 # ]
 import random
+
+
 class LaptopExpertSystem:
     def __init__(self, count):
         self.count = count
@@ -66,46 +67,69 @@ class LaptopExpertSystem:
     def generate_laptop(self):
         laptops = []
         for i in range(self.count):
-            laptop = {'name': f'Laptop{i}', 'usage': random.choice(['Graphic Design', 'Office Work', 'Gaming', 'Software Development']),
-                     'budget': random.choice(['High', 'Medium', 'Low']),
-                     'specs': {'screen_size': random.choice(['13 inches', '15 inches', '17 inches']),
-                               'processor_type': random.choice(['i5', 'i7', 'Ryzen 5', 'Ryzen 7']),
-                               'ram_size': random.choice(['8GB', '16GB', '32GB']),
-                               'storage_size': random.choice(['256GB SSD', '512GB SSD', '1TB HDD']),
-                               'weight': random.choice(['Light', 'Medium', 'Heavy'])},
-                     'brand': random.choice(['Dell', 'HP', 'Lenovo', 'Asus', 'Acer'])}
+            laptop = {'name': f'Laptop{i}',
+                      'usage': random.choice(['Graphic Design', 'Office Work', 'Gaming', 'Software Development']),
+                      'budget': random.choice(['High', 'Medium', 'Low']),
+                      'screen_size': random.choice(['13 inches', '15 inches', '17 inches']),
+                      'processor_type': random.choice(['i5', 'i7', 'Ryzen 5', 'Ryzen 7']),
+                      'ram_size': random.choice(['8GB', '16GB', '32GB']),
+                      'storage_size': random.choice(['256GB SSD', '512GB SSD', '1TB HDD']),
+                      'weight': random.choice(['Light', 'Medium', 'Heavy']),
+                      'brand': random.choice(['Dell', 'HP', 'Lenovo', 'Asus', 'Acer'])}
             laptops.append(laptop)
         return laptops
 
     def print_lap(self):
         print(self.laptops)
 
-    def recommend_laptop(self, laptop_data):
-        matching_laptops = self.laptops.copy()
-        selected_laptop = None
+    def recommend_laptop(self, recommendations):
+        matching_laptops = []
 
-        for category, preference in laptop_data.items():
-            if category == 'specs':
-                for spec, value in preference.items():
-                    matching_laptops = [laptop for laptop in matching_laptops if laptop[category][spec] == value]
-            else:
-                matching_laptops = [laptop for laptop in matching_laptops if laptop[category] == preference]
-
-            if len(matching_laptops) == 1:
-                selected_laptop = matching_laptops[0]
-                break
-            elif len(matching_laptops) == 0:
-                print(
-                    f"No matching laptops found for the preference: {category} = {preference}. Reverting to the previous preference.")
-                matching_laptops = self.laptops.copy()
-
-        if selected_laptop:
-            print("\nBased on your preferences, we recommend the following laptop:")
-            return f"{selected_laptop['name']} - {selected_laptop['brand']} - {selected_laptop['specs']}"
+        for laptops in self.laptops:
+            count = 0
+            for key, recc in recommendations.items():
+                if laptops[key] == recc:
+                    count += 1
+            matching_laptops.append({'count': int(count), 'laptop': laptops})
+        max_count_dict = None
+        max_count_dict = max(matching_laptops, key=lambda x: x['count'])
+        if max_count_dict:
+            return max_count_dict.get('laptop')
         else:
             return "Sorry, no matching laptops found for your preferences."
 
+
+
+        # for category, preference in laptop_data.items():
+        #     if category == 'specs':
+        #         for spec, value in preference.items():
+        #             matching_laptops = [laptop for laptop in matching_laptops if laptop[category][spec] == value]
+        #     else:
+        #         matching_laptops = [laptop for laptop in matching_laptops if laptop[category] == preference]
+        #
+        #     if len(matching_laptops) == 1:
+        #         selected_laptop = matching_laptops[0]
+        #         break
+        #     elif len(matching_laptops) == 0:
+        #         print(
+        #             f"No matching laptops found for the preference: {category} = {preference}. Reverting to the previous preference.")
+        #         matching_laptops = self.laptops.copy()
+        #
+        # if selected_laptop:
+        #     print("\nBased on your preferences, we recommend the following laptop:")
+        #     return f"{selected_laptop['name']} - {selected_laptop['brand']} - {selected_laptop['specs']}"
+        # else:
+        #     return "Sorry, no matching laptops found for your preferences."
+
+
 if __name__ == "__main__":
-    expert_system = LaptopExpertSystem(20)
-    expert_system.print_lap()
+    expert_system = LaptopExpertSystem(100)
+    print(expert_system.recommend_laptop(
+        {
+            'usage': 'Gaming',
+            'budget': 'Low',
+            'screen_size': '13 inches',
+            'weight': 'Light',
+            'brand': 'HP'}
+    ))
     # expert_system.recommend_laptop()
